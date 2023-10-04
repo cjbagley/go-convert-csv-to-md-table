@@ -33,21 +33,19 @@ func main() {
 	defer writeFile.Close()
 
 	reader := csv.NewReader(file)
-	writer := csv.NewWriter(writeFile)
-	defer writer.Flush()
 
 	var record []string
 	if *noHeader == false {
 		record, err = reader.Read()
-        writer.Write([]string{"--"})
-        writer.Write(processRow(record))
-        writer.Write([]string{"--"})
+        writeFile.WriteString("||\n| ")
+        writeFile.WriteString(strings.Join(record, " | ")) 
+        writeFile.WriteString(" |\n||\n")
 	}
 
 	for {
 		record, err = reader.Read()
 		if err == io.EOF {
-            writer.Write([]string{"--"})
+            writeFile.WriteString("||")
 			fmt.Println("Successfully created")
 			break
 		}
@@ -56,26 +54,13 @@ func main() {
 			exit(fmt.Errorf("Failed to read contents of '%s': %w", readFile, err).Error())
 		}
 
-        writer.Write(processRow(record))
+        writeFile.WriteString("| ")
+        writeFile.WriteString(strings.Join(record, " | ")) 
+        writeFile.WriteString(" |\n")
 	}
 }
 
 func exit(message string) {
 	fmt.Println(message)
 	os.Exit(1)
-}
-
-func processRow(row []string) []string {
-    var updated []string
-    var firstColumn bool = true
-
-    for _, r := range row {
-        if firstColumn {
-            updated = append(updated, "|")
-            firstColumn = false
-        }
-        updated = append(updated, r)
-        updated = append(updated, "|")
-	}
-	return updated 
 }
