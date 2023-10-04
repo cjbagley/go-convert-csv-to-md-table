@@ -38,12 +38,15 @@ func main() {
 	var record []string
 	if *noHeader == false {
 		record, err = reader.Read()
+        writer.Write([]string{"--"})
         writer.Write(processRow(record))
+        writer.Write([]string{"--"})
 	}
 
 	for {
 		record, err = reader.Read()
 		if err == io.EOF {
+            writer.Write([]string{"--"})
 			fmt.Println("Successfully created")
 			break
 		}
@@ -62,12 +65,15 @@ func exit(message string) {
 }
 
 func processRow(row []string) []string {
+    var updated []string
     firstColumn := true 
     for _, r := range row {
         if firstColumn {
-            
+            updated = append(updated, "|")
+            firstColumn = false
         }
-		fmt.Println(r)
+        updated = append(updated, r)
+        updated = append(updated, "|")
 	}
-	return row
+	return updated 
 }
