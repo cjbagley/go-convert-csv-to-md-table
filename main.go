@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	path "path/filepath"
+	"strings"
 )
 
 func main() {
@@ -28,7 +29,7 @@ func main() {
 		exit(fmt.Errorf("Could not open '%s': %v", readFile, err).Error())
 	}
 
-	writeFile, err := os.Create(dir + "/updated-" + readFilename)
+	writeFile, err := os.Create(dir + "/" + strings.Replace(readFilename, ".csv", ".org", 1))
 	defer writeFile.Close()
 
 	reader := csv.NewReader(file)
@@ -66,7 +67,8 @@ func exit(message string) {
 
 func processRow(row []string) []string {
     var updated []string
-    firstColumn := true 
+    var firstColumn bool = true
+
     for _, r := range row {
         if firstColumn {
             updated = append(updated, "|")
